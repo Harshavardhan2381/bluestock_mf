@@ -1,0 +1,14 @@
+*.db
+*.sqlite
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv
+venv/
+data/db/
+data/raw/**/latest*.csv
+data/raw/**/nav_history/
+.DS_Store
+.ipynb_checkpoints/

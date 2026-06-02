@@ -1,0 +1,2 @@
+-- Day 2+ placeholder schema.
+-- Day 1 focuses on ETL scripts and raw CSV ingestion into data/raw/.
