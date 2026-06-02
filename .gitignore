@@ -1,14 +1,6 @@
-*.db
-*.sqlite
+.venv/
 __pycache__/
 *.pyc
-*.pyo
-*.pyd
-.env
-.venv
-venv/
-data/db/
-data/raw/**/latest*.csv
-data/raw/**/nav_history/
+*.db
 .DS_Store
 .ipynb_checkpoints/

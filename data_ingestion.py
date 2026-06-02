@@ -1,32 +1,110 @@
-from __future__ import annotations
-
 from pathlib import Path
+import pandas as pd
 
-from scripts.etl_pipeline import load_all_datasets
-from scripts.live_nav_fetch import KEY_SCHEMES, main as nav_fetch_main
-from scripts.live_nav_fetch import validate_option_a
+from scripts.live_nav_fetch import main as run_nav_pipeline
+
+RAW_PATH = Path("data/raw/datasets")
+
+EXPECTED_COUNT = 10
 
 
-def main() -> None:
-    project_root = Path(__file__).resolve().parent
-    datasets_dir = project_root / "data" / "raw" / "datasets"
-    raw_dir = project_root / "data" / "raw"
+def validate_dataset_folder():
 
-    # 1) Load provided datasets (if any)
-    load_all_datasets(datasets_dir)
+    if not RAW_PATH.exists():
 
-    # 2) Fetch MFAPI raw data (fund master + key scheme NAV histories)
-    nav_fetch_main()
+        raise FileNotFoundError(
+            f"Dataset folder not found: {RAW_PATH}"
+        )
 
-    # 3) Validate AMFI codes — Option A (only validate the 6 key schemes)
-    validate_option_a(
-        fund_master_path=raw_dir / "master" / "fund_master.csv",
-        nav_history_dir=raw_dir / "nav_history",
-        expected_scheme_codes=[s.scheme_code for s in KEY_SCHEMES],
-    )
+    csv_files = list(RAW_PATH.glob("*.csv"))
+
+    if len(csv_files) == 0:
+
+        print("=" * 60)
+        print(
+            "[datasets] No CSV files found in "
+            "data/raw/datasets/"
+        )
+        print(
+            "Continuing with MFAPI ingestion."
+        )
+        print("=" * 60)
+
+        return []
+
+    if len(csv_files) != EXPECTED_COUNT:
+
+        print("=" * 60)
+        print(
+            f"Warning: Expected {EXPECTED_COUNT} CSV files "
+            f"but found {len(csv_files)}"
+        )
+        print("=" * 60)
+
+    return csv_files
+
+
+def analyze_csv(file):
+
+    print("\n" + "=" * 60)
+    print(f"Processing: {file.name}")
+    print("=" * 60)
+
+    try:
+
+        df = pd.read_csv(file)
+
+        print("\nShape:")
+        print(df.shape)
+
+        print("\nData Types:")
+        print(df.dtypes)
+
+        print("\nHead:")
+        print(df.head())
+
+        print("\nMissing Values:")
+        print(df.isnull().sum())
+
+        print("\nDuplicate Rows:")
+        print(df.duplicated().sum())
+
+        numeric_cols = df.select_dtypes(
+            include=["number"]
+        ).columns
+
+        if len(numeric_cols) > 0:
+
+            negative_values = (
+                df[numeric_cols] < 0
+            ).sum()
+
+            print("\nNegative Numeric Values:")
+            print(negative_values)
+
+    except Exception as e:
+
+        print(
+            f"Error processing {file.name}: {e}"
+        )
+
+
+def main():
+
+    csv_files = validate_dataset_folder()
+
+    if len(csv_files) > 0:
+
+        for file in csv_files:
+            analyze_csv(file)
+
+    print("\n[MFAPI] Starting NAV ingestion...")
+
+    run_nav_pipeline()
 
     print("\n[DONE] Day 1 data ingestion complete.")
 
 
 if __name__ == "__main__":
     main()
+
