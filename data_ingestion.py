@@ -22,3 +22,11 @@ def main() -> None:
     validate_option_a(
         fund_master_path=raw_dir / "master" / "fund_master.csv",
         nav_history_dir=raw_dir / "nav_history",
+        expected_scheme_codes=[s.scheme_code for s in KEY_SCHEMES],
+    )
+
+    print("\n[DONE] Day 1 data ingestion complete.")
+
+
+if __name__ == "__main__":
+    main()
