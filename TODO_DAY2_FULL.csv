@@ -1,0 +1,7 @@
+Day2 completion checklist (implemented)
+- [x] Updated SQLite schema: fact_transactions + fact_performance columns
+- [x] Updated Day2 ETL script to clean + load investor transactions and scheme performance
+- [x] Wrote cleaned outputs to data/processed/clean_transactions.csv and clean_performance.csv
+- [x] Updated sql/queries.sql with transaction + performance analytics
+- [x] Updated reports/data_dictionary.md for new fact table schemas
+
