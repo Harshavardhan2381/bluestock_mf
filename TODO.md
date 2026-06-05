@@ -1,16 +1,20 @@
-- [x] Inspect repo for data_ingestion.py
-- [x] Replace corrupted data_ingestion.py with clean version (syntax error fix)
-- [x] Create/activate venv and install requirements (pip install -r requirements.txt)
-- [x] Update data_ingestion.py to call scripts/live_nav_fetch.py pipeline after dataset validation
-- [x] Run data_ingestion.py and confirm MFAPI ingestion messages/output
-- [x] Verify output files in data/raw/master and data/raw/nav_history
+# Master TODO (Capstone)
 
-- [ ] Day 2: Update SQL schema (sql/schema.sql)
-- [x] Day 2: Build cleaned/merged outputs + load SQLite
-      - data/processed/nav_history_combined.csv
-      - data/db/bluestock_mf.db
-- [x] Day 2: Create notebook notebooks/02_data_cleaning.ipynb
-- [x] Day 2: Run a quick verification (row counts, schema sanity)
-- [ ] Day 2: git add/commit/push
+## Task 3 / Day 4 Performance Metrics
+- [x] Inspect `scripts/day4_performance_metrics.py`
+- [x] Verify Sharpe computation logic and outputs (`annualized_returns.csv`, `sharpe_values.csv`, `sortino_values.csv`, `cagr_report.csv`, `returns_computed.csv`)
+- [ ] Confirm `annualized_returns.csv` is produced with expected columns
+- [ ] Confirm `sharpe_values.csv` has expected schema and non-empty values
+- [ ] Confirm `sortino_values.csv` has expected schema and non-empty values
+- [ ] Confirm `cagr_report.csv` has expected schema and non-empty values
 
+## Investigation Notes
+- [x] Read `scripts/day4_performance_metrics.py`
+- [x] Read TODO specs for Day 3 EDA and Task 3 Sharpe
+
+
+## Day 3 EDA Notebook
+- [ ] Update `notebooks/03_eda_analysis.ipynb` to replace placeholder section with requested **Key Findings** (10 items)
+- [ ] Validate notebook remains valid JSON
+- [ ] Run verification script to confirm the new Markdown section exists
 
