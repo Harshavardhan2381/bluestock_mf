@@ -1,0 +1,115 @@
+// =============================================================================
+// Bluestock MF Dashboard — DAX Measures
+// Copy each measure into Power BI Desktop: Modeling → New measure
+// Table suggestion: create a dedicated "_Measures" table (Enter Data → single row)
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// KPI — Total AUM (industry total at latest report date)
+// Source: clean_aum (fund-house level; sum across houses on max report_date)
+// Expected from validation: ~6,274,000 Cr (62.74 lakh crore) with current dataset
+// -----------------------------------------------------------------------------
+Total AUM =
+VAR LatestDate = MAX ( clean_aum[report_date] )
+RETURN
+    CALCULATE (
+        SUM ( clean_aum[aum_crore] ),
+        clean_aum[report_date] = LatestDate
+    )
+
+// -----------------------------------------------------------------------------
+// KPI — Total SIP (latest monthly inflow)
+// Column: sip_inflow_crore (NOT sip_amount_crore)
+// Expected: ~31,002 Cr (Dec 2025)
+// -----------------------------------------------------------------------------
+Total SIP =
+VAR LatestMonth = MAX ( clean_sip_inflows[month] )
+RETURN
+    CALCULATE (
+        SUM ( clean_sip_inflows[sip_inflow_crore] ),
+        clean_sip_inflows[month] = LatestMonth
+    )
+
+// Alternative if you need cumulative SIP across all months (not recommended for KPI card):
+Total SIP All Months = SUM ( clean_sip_inflows[sip_inflow_crore] )
+
+// -----------------------------------------------------------------------------
+// KPI — Total Folios (latest month)
+// Column: total_folios_crore (NOT folio_count_crore)
+// Expected: ~26.12 Cr (Dec 2025)
+// -----------------------------------------------------------------------------
+Total Folios =
+VAR LatestMonth = MAX ( clean_folio_count[month] )
+RETURN
+    CALCULATE (
+        MAX ( clean_folio_count[total_folios_crore] ),
+        clean_folio_count[month] = LatestMonth
+    )
+
+// -----------------------------------------------------------------------------
+// KPI — Total Schemes
+// Expected with clean_performance: 40 schemes (subset dataset)
+// For full universe use: DISTINCTCOUNT ( clean_fund_master[scheme_code] ) → 9,577
+// -----------------------------------------------------------------------------
+Total Schemes = DISTINCTCOUNT ( clean_performance[scheme_code] )
+
+Total Schemes (Fund Master) = DISTINCTCOUNT ( clean_fund_master[scheme_code] )
+
+// -----------------------------------------------------------------------------
+// YoY SIP Growth — helper measures
+// -----------------------------------------------------------------------------
+Current SIP = [Total SIP]
+
+Previous SIP =
+VAR LatestMonth = MAX ( clean_sip_inflows[month] )
+VAR PriorYearMonth = EDATE ( LatestMonth, -12 )
+RETURN
+    CALCULATE (
+        SUM ( clean_sip_inflows[sip_inflow_crore] ),
+        clean_sip_inflows[month] = PriorYearMonth
+    )
+
+YoY SIP Growth % =
+DIVIDE ( [Current SIP] - [Previous SIP], [Previous SIP] )
+
+// Pre-computed column also available: clean_sip_inflows[yoy_growth_pct] (latest = 17.17%)
+
+// -----------------------------------------------------------------------------
+// Supporting measures for visuals
+// -----------------------------------------------------------------------------
+
+Industry AUM Trend =
+// Use on line chart with Axis = clean_aum[report_date]
+SUM ( clean_aum[aum_crore] )
+
+Avg SIP by Age Group =
+// Requires investor_transactions_raw table (see BUILD_GUIDE.md)
+AVERAGE ( investor_transactions_raw[amount_inr] )
+
+Transaction Amount =
+SUM ( clean_transactions[amount_inr] )
+
+Transaction Amount (with Demographics) =
+SUM ( investor_transactions_raw[amount_inr] )
+
+Avg 3Y Return =
+AVERAGE ( clean_performance[return_3yr_pct] )
+
+Avg Risk (Std Dev) =
+AVERAGE ( clean_performance[std_dev_ann_pct] )
+
+Fund Score =
+AVERAGE ( fund_scorecard[score] )
+
+Tracking Error Avg =
+AVERAGE ( tracking_error[tracking_error] )
+
+// FY25 flag helper (create as calculated column in Power Query on month-based tables)
+// FY25 = month >= 2024-04-01 AND month <= 2025-03-31
+
+Category Net Inflow FY25 =
+CALCULATE (
+    SUM ( clean_category_inflows[net_inflow_crore] ),
+    clean_category_inflows[month] >= DATE ( 2024, 4, 1 ),
+    clean_category_inflows[month] <= DATE ( 2025, 3, 31 )
+)

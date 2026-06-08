@@ -1,10 +1,3 @@
-cd ~/Desktop/bluestock_mf_capstone
-
-git add .
-
-git commit -m "Day 4: Performance analytics, risk metrics, scorecard and benchmark comparison"
-
-git push origin mainimport numpy as np
 import pandas as pd
 from pathlib import Path
 from scipy.stats import linregress

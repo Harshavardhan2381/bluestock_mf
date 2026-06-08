@@ -1,0 +1,92 @@
+{
+  "name": "Bluestock MF",
+  "dataColors": [
+    "#003366",
+    "#0057B8",
+    "#00A3E0",
+    "#F4F7FB",
+    "#003366",
+    "#0057B8",
+    "#00A3E0",
+    "#4DA6D9"
+  ],
+  "background": "#F4F7FB",
+  "foreground": "#003366",
+  "tableAccent": "#0057B8",
+  "good": "#00A3E0",
+  "neutral": "#0057B8",
+  "bad": "#CC3333",
+  "maximum": "#003366",
+  "center": "#0057B8",
+  "minimum": "#F4F7FB",
+  "textClasses": {
+    "callout": {
+      "fontSize": 32,
+      "fontFace": "Segoe UI Semibold",
+      "color": "#003366"
+    },
+    "title": {
+      "fontSize": 12,
+      "fontFace": "Segoe UI Semibold",
+      "color": "#003366"
+    },
+    "header": {
+      "fontSize": 11,
+      "fontFace": "Segoe UI",
+      "color": "#003366"
+    },
+    "label": {
+      "fontSize": 10,
+      "fontFace": "Segoe UI",
+      "color": "#0057B8"
+    }
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [
+          {
+            "show": true,
+            "color": { "solid": { "color": "#FFFFFF" } },
+            "transparency": 0
+          }
+        ],
+        "visualHeader": [
+          {
+            "foreground": { "solid": { "color": "#003366" } },
+            "background": { "solid": { "color": "#F4F7FB" } }
+          }
+        ],
+        "title": [
+          {
+            "fontColor": { "solid": { "color": "#003366" } }
+          }
+        ]
+      }
+    },
+    "card": {
+      "*": {
+        "labels": [
+          {
+            "color": { "solid": { "color": "#003366" } }
+          }
+        ],
+        "categoryLabels": [
+          {
+            "color": { "solid": { "color": "#0057B8" } }
+          }
+        ]
+      }
+    },
+    "page": {
+      "*": {
+        "background": [
+          {
+            "color": { "solid": { "color": "#F4F7FB" } },
+            "transparency": 0
+          }
+        ]
+      }
+    }
+  }
+}
