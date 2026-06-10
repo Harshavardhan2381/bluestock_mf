@@ -1,75 +1,60 @@
-# Bluestock MF Capstone (Day 2)
+# Bluestock MF Capstone
 
-## Project overview
-Bluestock MF Capstone builds a small **star schema in SQLite** to support quick analytics over mutual fund data:
-- `dim_fund`, `dim_category`
-- `fact_nav`
-- `fact_transactions` (investor transactions)
-- `fact_performance` (scheme performance snapshot)
+## Project Overview
+Bluestock MF Capstone analyzes mutual fund transaction and holdings data to produce risk and investor-behavior insights (VaR/CVaR, rolling Sharpe, cohorts, SIP continuity, recommendations, and sector concentration via HHI). Outputs are written to `data/processed/` and visualizations to `reports/charts/`.
 
-This repository’s ETL runs in Python and produces cleaned CSVs + a SQLite database for SQL exploration.
+## Folder Structure
+- `data/`
+  - `processed/` — cleaned and computed CSVs used by analytics scripts
+- `scripts/`
+  - Day-based ETL/analytics scripts (Python)
+- `notebooks/`
+  - Jupyter notebooks for reporting
+- `reports/`
+  - `charts/` — PNG outputs used in notebooks and final report
+- `run_pipeline.py`
+  - Master runner to execute key pipeline steps
 
-## Architecture
-- **Raw datasets** live under `data/raw/datasets/`
-- **Processed (cleaned) outputs** are written to `data/processed/`
-- **SQLite database** is created at `data/db/bluestock_mf.db`
-- **Schema** is defined in `sql/schema.sql`
-- **ETL (Day 2)** is implemented in `scripts/day2_build_sqlite.py`
+## Installation
+From project root:
 
-## Datasets used (Day 2)
-- `07_scheme_performance.csv`
-- `08_investor_transactions.csv`
-- `fund_master.csv` (from `data/raw/master/`)
-- NAV history CSVs (from `data/raw/nav_history/`)
-
-## ETL pipeline (Day 2)
-`scripts/day2_build_sqlite.py` performs:
-1. Clean `fund_master` → load into `dim_fund` and `dim_category`
-2. Clean/merge NAV history → load into `fact_nav`
-3. Clean investor transactions → write `data/processed/clean_transactions.csv` → load into `fact_transactions`
-4. Clean scheme performance → write `data/processed/clean_performance.csv` → load into `fact_performance`
-5. Create SQLite schema from `sql/schema.sql`
-
-### Fact table schemas
-- `fact_transactions`:
-  - one row per investor transaction
-  - columns: `transaction_id`, `investor_id`, `scheme_code`, `date`, `amount_inr`, `transaction_type`, `kyc_status`, `payment_mode`
-- `fact_performance`:
-  - one row per scheme (snapshot)
-  - columns: returns/benchmark, alpha/beta/sharpe/sortino, risk/stats, `computed_on`
-
-## Schema diagram (logical)
-```
-            +------------------+
-            |     dim_fund     |
-            | scheme_code (PK)|
-            +---------+--------+
-                      |
-                      | scheme_code
-                      |
-+---------------------v---------------------+
-|                   facts                  |
-|                                           |
-|  fact_nav (scheme_code, date, nav, ...) |
-|  fact_performance (scheme_code, ...)    |
-|  fact_transactions (transaction_id, ...) |
-+-------------------------------------------+
-```
-
-## Sample SQL queries
-SQL lives in `sql/queries.sql`.
-Run queries by opening the file in an SQLite client or via Python.
-
-## How to run Day 2
 ```bash
-python bluestock_mf_capstone/scripts/day2_build_sqlite.py
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
 ```
 
-## Outputs
-- `data/processed/clean_transactions.csv`
-- `data/processed/clean_performance.csv`
-- `data/db/bluestock_mf.db`
+## How to Run ETL
+Run the day-based scripts that generate cleaned datasets (e.g., day4/day5/day6 depending on your workflow).
 
-## Notes
-- Day 2 refreshes the SQLite DB each run to keep schema/data aligned.
+## How to Run Analytics
+Typical Day 6 analytics run:
+
+```bash
+.venv/bin/python3 scripts/day6_cohort_analysis.py
+.venv/bin/python3 scripts/day6_sip_continuity.py
+.venv/bin/python3 scripts/day6_sector_hhi.py
+.venv/bin/python3 scripts/day6_advanced_analytics.py
+```
+
+Recommendation:
+
+```bash
+.venv/bin/python3 scripts/recommender.py
+```
+
+## Dashboard Information
+Power BI / Tableau assets (if used) live alongside the project. Refer to the project deliverables for publishing steps.
+
+## Results & Findings
+Outputs created during Day 6:
+- `data/processed/var_cvar_report.csv`
+- `data/processed/cohort_analysis.csv`
+- `data/processed/sip_continuity.csv`
+- `data/processed/sector_hhi.csv`
+- `reports/charts/rolling_sharpe_chart.png`
+- `reports/charts/sector_hhi.png`
+- `notebooks/Advanced_Analytics.ipynb`
+
+Key limitations:
+- Low-risk recommendations may be empty if the low-risk schemes are not present in the Sharpe-return universe (`sharpe_values.csv`).
 
